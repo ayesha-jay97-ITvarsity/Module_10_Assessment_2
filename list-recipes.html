@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title> My Recipe Book </title>                                     
+        <link rel = "stylesheet" href = "style.css">
+        <link rel = "stylesheet" href = "fontAwesome/css/all.css">                  <!-- we didn't need this in our home page, so we didn't link it there -->
+    </head>
+
+    <body class = "body-meals" onload = "getRecipeList()">                          <!-- add an onload event handler to the body tag, so that when the body of the page loads, it will automatically apply the getRecipeList func, which gets the list of recipes -->
+        <div class = "header">                                                      
+            <a href = "index.html"><i class = "fa-solid fa-arrow-left"></i></a>     <!-- we place the arrow icon inside the <a> cos we want that to be the hyperlink to the home page-->
+            <a href = "index.html"><img src = "images/logo-text.png"></a>
+        </div>
+
+        <div id = "meals">                                                                                  <!-- div id for page content -->
+            <div class = "meals-list" id = "output">                                                         <!-- add "output" id-->
+                                                                                                            <!-- this hyperlinks is an eg of hard coding i.e. every single recipe is being hard coded. we remove this, cos we don't want any hard coding in our app  -->
+            </div>  
+        </div>     
+
+        <!-- JAVASCRIPT -->
+        <script>
+            var category = getCategory();                                           /* make the var category equal to the func getCategory(), which gets the category, as the name implies */
+
+            function getRecipeList(){
+                var rootPath = "https://mysite.itvarsity.org/api/recipe-book/";     /* store the api url into a var that can be sent to a func instead of the long complex url string */
+                var fullPath = rootPath + "get-recipes/?category=" + category;      /* fulPath is the rootPath (url api) + the call to the api + category (i.e.main/drink/dessert) */
+
+                fetch(fullPath)
+                    .then(function(response){
+                        return response.json();
+                    })
+                    .then(function(data){
+                        var output = "";                        
+                        for(a = 0; a < data.length; a++){                            /* we iterate thru the data array using the for function by using a loop: we 1st create an arbitrary var "a", which will have the val of obj 0, and then it will apply the code below where it extracts the title and descript of obj 0 in the console log. thereafter, it will loop back to the beginning of the for() where it loops back cos we specify that "a++" i.e. loop back and start with next object in the array i.e. obj 1. We specify "a < data.lenght" so that this loop continues until there are no more obj's left in the array */
+                            output += `
+                                <a href = "show-recipe.html?id=${data[a].id}">  
+                                    <div class = "meals-list-item">
+                                        <h1>${data[a].title}<i class = "fas fa-chevron-circle-right"></i></h1>
+
+                                        <p>${data[a].description}</p>                                    
+                                    </div>
+                                </a>
+                            `;
+                        }
+                        document.getElementById("output").innerHTML = output;        /* specify where the output var must be displayed by id */
+                    })
+            }
+
+            function getCategory(){
+                var url = window.location.href;                                     /* create a var that takes the url from the window in our browser that stores the url as its val */
+                var pos = url.search("=");                                          /* pos = POSition of the equals to sign in the url from the start of the url to its curr position. search the var "url" for an = sign and give the pos the val of that = sign position. cos after the = sign is the category name, which is what we want to extract */
+                var category = url.slice(pos + 1);                                  /* create category var by extracting the pos var from the url var and adding 1. we add 1 cos we want to exclude the = sign, so we slice out the category name excluding the val stored in pos (by adding 1), which is the char posit of the = sign */
+
+                return category;                                                    /* return the category var */
+            }
+
+        </script>
+
+    </body>
+</html> 

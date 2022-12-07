@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title> My Recipe Book </title>                            
+        <link rel = "stylesheet" href = "style.css">
+        <link rel = "stylesheet" href = "fontAwesome/css/all.css">                                 
+    </head>
+
+    <body class = "body-recipes" onload = "getRecipe()">                          <!-- add an onload event handler where the event/func "getRecipe" is called once the body of the page has loaded -->
+
+        <div class = "header">                                   
+            <a id = "back-link" href = "#">
+                <i class = "fa-solid fa-arrow-left"></i>
+            </a>   
+            
+            <a href = "index.html"><img src = "images/logo-text.png"></a>
+        </div>
+
+        <div id = "recipe">
+            <div class = "recipe-details" id = "output">
+
+            </div>
+        </div>     
+
+        <!-- JAVASCRIPT-->
+        <script>
+            var id = getID();                                                       /* make the var id equal to the func getID(), which gets the recipe's id, as the name implies */
+
+            function getRecipe(){
+                var rootPath = "https://mysite.itvarsity.org/api/recipe-book/";     /* store the api url into a var that can be sent to a func instead of the long complex url string */
+                var fullPath = rootPath + "get-recipes/?id=" + id;                  /* fulPath is the rootPath (url api) + the call to the api + recipe id */
+
+                fetch(fullPath)                                                     
+                    .then(function(response){
+                        return response.json();
+                    })
+                    .then(function(data){
+                        
+                        document.getElementById("back-link").href = "list-recipes.html?category=" + data[0].category;       /* the user will go back to the list-recipes.html if they click on the hyperlink with the back button id */
+                        
+                        var output = "";
+
+                        output +=                                                                                           /* we don't create a for() loop, cos we don't want to list & iterate thru all items in the array. we simply want to call 1 recipe at a time */
+                            `<img src = "${rootPath}uploads/${data[0].image}">
+                        
+                            <h1>${data[0].title}</h1>
+                        
+                            <div class = "recipe-details-ingredients">
+                                <h2> Ingredients: </h2>
+                                <ul>
+                                    ${data[0].ingredients}
+                                </ul>
+                            </div>
+
+                            <div class = "recipe-details-steps">
+                                <h2> Method: </h2>
+                                <ol>
+                                    ${data[0].method}    
+                                </ol>
+                            </div>
+                        
+                        `;
+                        document.getElementById("output").innerHTML = output;
+                    })
+            }
+
+            function getID(){
+                var url = window.location.href;                                     /* create a var that takes the url from the window in our browser that stores the url as its val */
+                var pos = url.search("=");                                          /* pos = POSition of the equals to sign in the url from the start of the url to its curr position. search the var "url" for an = sign and give the pos the val of that = sign position. cos after the = sign is the id name, which is what we want to extract */
+                var id = url.slice(pos + 1);                                        /* create id var by extracting the pos var from the url var and adding 1. we add 1 cos we want to exclude the = sign, so we slice out the id name excluding the val stored in pos (by adding 1), which is the char posit of the = sign */
+
+                return id;                                                          /* return the category var */
+            }
+
+
+
+
+        </script>
+
+    </body>
+</html> 
